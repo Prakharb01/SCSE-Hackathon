@@ -21,7 +21,9 @@ const Dashboard = () => {
     criticalAlerts, 
     criticalAlertMessage, 
     credits,
-    completedJobs // <--- Added this
+    reputation,
+    completedJobs,
+    completedTrades
   } = useOutletContext();
 
   const renderContent = () => {
@@ -37,7 +39,9 @@ const Dashboard = () => {
           criticalAlerts={criticalAlerts} 
           criticalAlertMessage={criticalAlertMessage} 
           credits={credits}
-          completedJobs={completedJobs} // <--- Pass it down
+          reputation={reputation}
+          completedJobs={completedJobs}
+          completedTrades={completedTrades}
         />;
       case 'EMPLOYMENT':
         return <EmploymentView completedJobs={completedJobs} />; // <--- Pass it down
@@ -98,7 +102,7 @@ const Dashboard = () => {
 
 /* --- PAGE VIEWS --- */
 
-const CommandView = ({ recentJobs, recentTrades, activityFeed, navigate, activeJobs, activeTrades, criticalAlerts, criticalAlertMessage, credits, completedJobs }) => (
+const CommandView = ({ recentJobs, recentTrades, activityFeed, navigate, activeJobs, activeTrades, criticalAlerts, criticalAlertMessage, credits, reputation, completedJobs, completedTrades }) => (
   <div className="animate-in fade-in duration-500">
     <header className="flex justify-between items-start mb-8">
       <div>
@@ -110,7 +114,7 @@ const CommandView = ({ recentJobs, recentTrades, activityFeed, navigate, activeJ
       </div>
       <div className="text-right">
         <div className="text-[10px] tracking-widest opacity-60 uppercase">Reputation Score</div>
-        <div className="text-4xl font-bold text-white">100</div>
+        <div className="text-4xl font-bold text-white">{reputation}</div>
         <div className="text-[10px] text-cyan-400 uppercase">City Credits</div>
         <div className="text-2xl font-bold text-cyan-400">{credits}</div>
       </div>
@@ -157,9 +161,9 @@ const CommandView = ({ recentJobs, recentTrades, activityFeed, navigate, activeJ
     </SectionBox>
 
     <div className="grid grid-cols-3 gap-4 mt-6">
-      {/* Updated to use completedJobs from context */}
+      {/* Updated to use completedJobs and completedTrades from context */}
       <FooterStat icon={<Briefcase size={20}/>} val={completedJobs.toString()} label="JOBS COMPLETED" />
-      <FooterStat icon={<RefreshCw size={20}/>} val="0" label="TRADES COMPLETED" />
+      <FooterStat icon={<RefreshCw size={20}/>} val={completedTrades.toString()} label="TRADES COMPLETED" />
       <FooterStat icon={<ShieldCheck size={20} className="text-yellow-500"/>} val="PENDING" label="VERIFICATION" color="text-yellow-500" />
     </div>
   </div>
@@ -223,7 +227,7 @@ const IdentityView = () => (
       </div>
       <div className="ml-auto text-center border-l border-cyan-900/40 pl-8">
          <div className="text-[10px] opacity-40 uppercase mb-1">Reputation</div>
-         <div className="text-4xl font-black text-cyan-400">100</div>
+         <div className="text-4xl font-black text-cyan-400">{reputation}</div>
       </div>
     </div>
   </div>

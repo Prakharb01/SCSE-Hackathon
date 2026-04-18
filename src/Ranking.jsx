@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { 
   LayoutGrid, 
   Briefcase, 
@@ -151,29 +151,35 @@ const ExchangePage = () => {
 
 // --- RANKINGS PAGE COMPONENT ---
 const RankingsPage = () => {
+  const { credits = 100, reputation = 100 } = useOutletContext();
   const users = [
-    { name: "Director Steele", sector: "Power Grid", rep: 100, rank: 1 },
-    { name: "Kaito Ryu", sector: "Tech Quarter", rep: 100, rank: 2 },
-    { name: "prakhar", sector: "Tech Quarter", rep: 100, rank: 5, isUser: true }
+    { name: "Director Steele", sector: "Power Grid", credit: 1580, rep: 220, isUser: false },
+    { name: "Kaito Ryu", sector: "Tech Quarter", credit: 1320, rep: 190, isUser: false },
+    { name: "Sable Nova", sector: "Industrial", credit: 1040, rep: 160, isUser: false },
+    { name: "prakhar", sector: "Tech Quarter", credit: credits, rep: reputation, isUser: true }
   ];
+
+  const sortedUsers = [...users].sort((a, b) => b.credit - a.credit || b.rep - a.rep);
 
   return (
     <div className="p-12 max-w-4xl mx-auto">
       <header className="text-center mb-12">
         <h2 className="text-5xl font-black text-white uppercase italic neon-text">Leaderboard</h2>
-        <p className="text-xs text-slate-500 mt-2 tracking-widest uppercase">Top Citizens by Reputation</p>
+        <p className="text-xs text-slate-500 mt-2 tracking-widest uppercase">Top Citizens by Credit & Reputation</p>
       </header>
       <div className="space-y-4">
-        {users.map((u, i) => (
-          <div key={i} className={`flex items-center p-4 bg-[#161b22]/40 border ${u.isUser ? 'border-[#00d4ff]' : 'border-[#30363d]'}`}>
-             <div className="w-10 text-xl font-bold">{u.rank}</div>
+        {sortedUsers.map((u, i) => (
+          <div key={u.name} className={`flex items-center p-4 bg-[#161b22]/40 border ${u.isUser ? 'border-[#00d4ff]' : 'border-[#30363d]'}`}>
+             <div className="w-10 text-xl font-bold">{i + 1}</div>
              <div className="flex-1">
                 <p className="font-bold">{u.name}</p>
                 <p className="text-[10px] text-slate-500 uppercase">{u.sector}</p>
              </div>
              <div className="text-right">
-                <p className="text-[8px] uppercase text-slate-500">Reputation</p>
-                <p className="text-xl font-black text-white">{u.rep}</p>
+                <p className="text-[8px] uppercase text-slate-500">Credit Score</p>
+                <p className="text-xl font-black text-white">{u.credit}</p>
+                <p className="text-[8px] uppercase text-slate-500 mt-2">Reputation</p>
+                <p className="text-lg font-bold text-cyan-300">{u.rep}</p>
              </div>
           </div>
         ))}

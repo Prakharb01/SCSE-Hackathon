@@ -15,20 +15,22 @@ import {
 
 const Exchange = () => {
   const navigate = useNavigate();
-  const { recentTrades } = useOutletContext(); // Removed totalTrades as we will calculate it locally
+  const { recentTrades, completedTrades, setCompletedTrades, setRecentTrades, setReputation } = useOutletContext();
   const [createdListings, setCreatedListings] = useState([]);
   
   // Combine created listings with system-generated trades
   const listings = [
     ...createdListings,
-    ...recentTrades.map((trade, index) => ({
-      id: `sys-${index}`,
+    ...recentTrades.map((trade) => ({
+      id: `sys-${trade.id}`,
       category: trade.type === 'physical' ? 'Technology' : 'Digital Assets',
       title: trade.title,
       desc: `Automated trade listing: ${trade.title}. ${trade.type} item available for exchange.`,
       seeking: trade.type === 'physical' ? 'Digital assets or services' : 'Physical goods or credits',
       rep: 100,
-      author: 'System Auto'
+      author: 'System Auto',
+      sourceId: trade.id,
+      isSystem: true
     }))
   ];
 
@@ -36,7 +38,7 @@ const Exchange = () => {
   const totalCount = listings.length;
   // In this logic, all listings are "Available" until they are moved to a "Completed" state
   const availableCount = listings.length; 
-  const completedCount = 0; 
+  const completedCount = completedTrades; 
   
   // --- STATE MANAGEMENT ---
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,6 +65,22 @@ const Exchange = () => {
     setFormData({ title: '', category: 'Technology', desc: '', seeking: '' });
   };
 
+  const handleAcceptTrade = (listing) => {
+    if (listing.isSystem) {
+      const tradeId = Number(listing.sourceId);
+      if (!Number.isNaN(tradeId)) {
+        setCompletedTrades(prev => prev + 1);
+        setReputation(prev => prev + 100);
+        const currentTrades = recentTrades.filter(trade => trade.id !== tradeId);
+        setRecentTrades(currentTrades);
+      }
+    } else {
+      setCompletedTrades(prev => prev + 1);
+      setReputation(prev => prev + 100);
+      setCreatedListings(prev => prev.filter(item => item.id !== listing.id));
+    }
+  };
+
   const cyberpunkCSS = `
     @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap');
     .cyber-font { font-family: 'Rajdhani', sans-serif; }
@@ -82,7 +100,7 @@ const Exchange = () => {
 
       {/* LISTING MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
           <div className="w-full max-w-md bg-[#161b22] border border-[#00d4ff]/30 p-8 relative neon-glow">
             <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-slate-500 hover:text-[#00d4ff]">
               <X size={20} />
@@ -212,7 +230,7 @@ const Exchange = () => {
             {listings
               .filter(item => item.title.toLowerCase().includes(searchTerm.toLowerCase()))
               .map(item => (
-                <TradeCard key={item.id} {...item} />
+                <TradeCard key={item.id} {...item} onAccept={() => handleAcceptTrade(item)} />
             ))}
           </div>
         </div>
@@ -239,7 +257,7 @@ const StatCard = ({ label, value }) => (
   </div>
 );
 
-const TradeCard = ({ category, title, desc, seeking, rep, author }) => (
+const TradeCard = ({ category, title, desc, seeking, rep, author, onAccept }) => (
   <div className="bg-[#161b22]/20 border border-[#30363d] p-6 hover:bg-[#161b22]/40 transition-all border-l-2 border-l-[#30363d] hover:border-l-[#00d4ff] animate-in fade-in slide-in-from-bottom-2 duration-300">
     <div className="flex justify-between mb-4">
       <div className="flex gap-2">
@@ -256,11 +274,14 @@ const TradeCard = ({ category, title, desc, seeking, rep, author }) => (
         <p className="text-[13px] text-[#00d4ff] font-semibold truncate">{seeking}</p>
         <p className="text-[11px] text-slate-500 mt-2 italic">by {author}</p>
       </div>
-      <div className="text-right ml-4 min-w-[60px]">
+      <div className="text-right ml-4 min-w-15">
         <p className="text-[11px] text-slate-600 mb-1">0 offers</p>
         <p className="text-[12px] text-yellow-500 font-bold whitespace-nowrap">⭐ {rep} REP</p>
       </div>
     </div>
+    <button onClick={onAccept} className="mt-6 w-full bg-[#00d4ff] text-black font-bold uppercase text-[10px] py-3 tracking-widest hover:brightness-110">
+      ACCEPT TRADE
+    </button>
   </div>
 );
 
