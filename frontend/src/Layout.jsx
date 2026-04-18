@@ -5,6 +5,18 @@ function Layout() {
   const recentItemLifetime = 25000; // 25 seconds before an item expires
   const maxRecentItems = 6; // cap to avoid overflow if expiration is delayed
 
+  // Get current user data from localStorage
+  const getCurrentUser = () => {
+    try {
+      const authData = localStorage.getItem('auth');
+      return authData ? JSON.parse(authData) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const currentUser = getCurrentUser();
+
   // State for managing recent jobs
   const [recentJobs, setRecentJobs] = useState([
     { id: 1, title: "Data Runner - Steel District Archives", sector: "Transport", level: "NORMAL", createdAt: Date.now() },
@@ -153,7 +165,8 @@ function Layout() {
       setCompletedJobs,
       setCompletedTrades,
       setRecentJobs,
-      setRecentTrades
+      setRecentTrades,
+      currentUser
     }} />
   )
 }

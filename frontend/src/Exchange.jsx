@@ -10,12 +10,25 @@ import {
   Plus, 
   Search, 
   Bell,
+  LogOut,
   X 
 } from 'lucide-react';
 
 const Exchange = () => {
   const navigate = useNavigate();
-  const { recentTrades, completedTrades, setCompletedTrades, setRecentTrades, setReputation } = useOutletContext();
+  const context = useOutletContext();
+  
+  // Add safety check for context
+  if (!context) {
+    return <div className="flex items-center justify-center h-screen text-white">Loading Exchange...</div>;
+  }
+  
+  const { recentTrades, completedTrades, setCompletedTrades, setRecentTrades, setReputation, currentUser } = context;
+  
+  // Add safety check for recentTrades
+  if (!Array.isArray(recentTrades)) {
+    return <div className="flex items-center justify-center h-screen text-white">Loading trades...</div>;
+  }
   const [createdListings, setCreatedListings] = useState([]);
   
   // Combine created listings with system-generated trades
@@ -58,7 +71,7 @@ const Exchange = () => {
       ...formData,
       id: Date.now(),
       rep: 100,
-      author: "V. Mishra"
+      author: currentUser?.["User name"] || "Anonymous"
     };
     setCreatedListings(prev => [newItem, ...prev]);
     setIsModalOpen(false);
@@ -151,25 +164,29 @@ const Exchange = () => {
         </div>
 
         <div className="flex items-center gap-3 p-3 bg-[#161b22]/50 border border-[#30363d] rounded mb-8">
-          <div className="w-8 h-8 bg-blue-900 rounded flex items-center justify-center text-xs font-bold">P</div>
+          <div className="w-8 h-8 bg-blue-900 rounded flex items-center justify-center text-xs font-bold">
+            {currentUser?.["User name"]?.charAt(0).toUpperCase() || 'U'}
+          </div>
           <div className="flex-1">
-            <p className="text-sm font-bold leading-none">prakhar</p>
-            <p className="text-[10px] text-yellow-500 mt-1">⚡ 100 REP</p>
+            <p className="text-sm font-bold leading-none">{currentUser?.["User name"] || 'User'}</p>
+            <p className="text-[10px] text-yellow-500 mt-1">⚡ {currentUser?.Ranking || reputation} REP</p>
           </div>
           <span className="text-[9px] border border-[#00d4ff] text-[#00d4ff] px-2 py-0.5 rounded">CITIZEN</span>
         </div>
 
         <nav className="space-y-4 flex-1">
-          <SidebarLink icon={<LayoutGrid size={18}/>} label="COMMAND" sub="Dashboard" onClick={() => navigate('/')} />
-          <SidebarLink icon={<Briefcase size={18}/>} label="EMPLOYMENT" sub="Grid" onClick={() => navigate('/employment')} />
-          <SidebarLink icon={<RefreshCw size={18}/>} label="EXCHANGE" sub="Market" active onClick={() => navigate('/exchange')} />
-          <SidebarLink icon={<Activity size={18}/>} label="THE PULSE" sub="City Feed" onClick={() => navigate('/thepulse')} />
-          <SidebarLink icon={<Trophy size={18}/>} label="RANKINGS" sub="Leaderboard" onClick={() => navigate('/ranking')} />
-          <SidebarLink icon={<User size={18}/>} label="IDENTITY" sub="Profile" onClick={() => navigate('/identity')} />
+          <SidebarLink icon={<LayoutGrid size={18}/>} label="COMMAND" sub="Dashboard" onClick={() => navigate('/app')} />
+          <SidebarLink icon={<Briefcase size={18}/>} label="EMPLOYMENT" sub="Grid" onClick={() => navigate('/app/employment')} />
+          <SidebarLink icon={<RefreshCw size={18}/>} label="EXCHANGE" sub="Market" active onClick={() => navigate('/app/exchange')} />
+          <SidebarLink icon={<Activity size={18}/>} label="THE PULSE" sub="City Feed" onClick={() => navigate('/app/thepulse')} />
+          <SidebarLink icon={<Trophy size={18}/>} label="RANKINGS" sub="Leaderboard" onClick={() => navigate('/app/ranking')} />
+          <SidebarLink icon={<User size={18}/>} label="IDENTITY" sub="Profile" onClick={() => navigate('/app/identity')} />
         </nav>
 
         <div className="pt-4 border-t border-[#30363d] text-[10px] text-slate-600">
-          <p>DISCONNECT</p>
+          <button onClick={() => { localStorage.removeItem('auth'); navigate('/login', { replace: true }); }} className="flex items-center gap-2 uppercase tracking-widest text-left text-[10px] opacity-50 hover:opacity-100 transition-all p-2">
+            <LogOut size={14} /> DISCONNECT
+          </button>
           <p className="mt-1 text-cyan-500/50">SECTOR: TECH QUARTER</p>
         </div>
       </aside>

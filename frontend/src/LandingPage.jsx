@@ -23,7 +23,8 @@ const Dashboard = () => {
     credits,
     reputation,
     completedJobs,
-    completedTrades
+    completedTrades,
+    currentUser
   } = useOutletContext();
 
   const renderContent = () => {
@@ -42,6 +43,7 @@ const Dashboard = () => {
           reputation={reputation}
           completedJobs={completedJobs}
           completedTrades={completedTrades}
+          currentUser={currentUser}
         />;
       case 'EMPLOYMENT':
         return <EmploymentView completedJobs={completedJobs} />; // <--- Pass it down
@@ -71,23 +73,23 @@ const Dashboard = () => {
         </div>
 
         <div className="flex items-center gap-3 p-3 bg-cyan-950/20 rounded-sm border border-cyan-900/30 mb-6">
-          <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-black font-bold">P</div>
+          <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-black font-bold">{currentUser?.["User name"]?.charAt(0).toUpperCase() || 'U'}</div>
           <div>
-            <div className="text-xs font-bold text-white">prakhar</div>
-            <div className="text-[10px] text-cyan-400 opacity-70 italic">100 REP • CITIZEN</div>
+            <div className="text-xs font-bold text-white">{currentUser?.["User name"] || 'User'}</div>
+            <div className="text-[10px] text-cyan-400 opacity-70 italic">{currentUser?.Ranking || reputation} REP • CITIZEN</div>
           </div>
         </div>
 
         <nav className="flex-1 space-y-1">
-          <NavItem icon={<LayoutDashboard size={18}/>} label="COMMAND" sub="Dashboard" active={activeTab === 'COMMAND'} onClick={() => navigate('/')} />
-          <NavItem icon={<Briefcase size={18}/>} label="EMPLOYMENT" sub="Grid" active={activeTab === 'EMPLOYMENT'} onClick={() => navigate('/employment')} />
-          <NavItem icon={<RefreshCw size={18}/>} label="EXCHANGE" sub="Market" active={activeTab === 'EXCHANGE'} onClick={() => navigate('/exchange')} />
-          <NavItem icon={<Activity size={18}/>} label="THE PULSE" sub="City Feed" active={activeTab === 'THE PULSE'} onClick={() => navigate('/thepulse')} />
-          <NavItem icon={<Trophy size={18}/>} label="RANKINGS" sub="Leaderboard" active={activeTab === 'RANKINGS'} onClick={() => navigate('/ranking')} />
-          <NavItem icon={<User size={18}/>} label="IDENTITY" sub="Profile" active={activeTab === 'IDENTITY'} onClick={() => navigate('/identity')} />
+          <NavItem icon={<LayoutDashboard size={18}/>} label="COMMAND" sub="Dashboard" active={activeTab === 'COMMAND'} onClick={() => navigate('/app')} />
+          <NavItem icon={<Briefcase size={18}/>} label="EMPLOYMENT" sub="Grid" active={activeTab === 'EMPLOYMENT'} onClick={() => navigate('/app/employment')} />
+          <NavItem icon={<RefreshCw size={18}/>} label="EXCHANGE" sub="Market" active={activeTab === 'EXCHANGE'} onClick={() => navigate('/app/exchange')} />
+          <NavItem icon={<Activity size={18}/>} label="THE PULSE" sub="City Feed" active={activeTab === 'THE PULSE'} onClick={() => navigate('/app/thepulse')} />
+          <NavItem icon={<Trophy size={18}/>} label="RANKINGS" sub="Leaderboard" active={activeTab === 'RANKINGS'} onClick={() => navigate('/app/ranking')} />
+          <NavItem icon={<User size={18}/>} label="IDENTITY" sub="Profile" active={activeTab === 'IDENTITY'} onClick={() => navigate('/app/identity')} />
         </nav>
 
-        <button className="flex items-center gap-2 text-xs opacity-50 hover:opacity-100 transition-all p-2 mt-auto">
+        <button onClick={() => { localStorage.removeItem('auth'); navigate('/login', { replace: true }); }} className="flex items-center gap-2 text-xs opacity-50 hover:opacity-100 transition-all p-2 mt-auto">
           <LogOut size={14} /> DISCONNECT
         </button>
       </aside>
@@ -102,27 +104,27 @@ const Dashboard = () => {
 
 /* --- PAGE VIEWS --- */
 
-const CommandView = ({ recentJobs, recentTrades, activityFeed, navigate, activeJobs, activeTrades, criticalAlerts, criticalAlertMessage, credits, reputation, completedJobs, completedTrades }) => (
+const CommandView = ({ recentJobs, recentTrades, activityFeed, navigate, activeJobs, activeTrades, criticalAlerts, criticalAlertMessage, credits, reputation, completedJobs, completedTrades, currentUser }) => (
   <div className="animate-in fade-in duration-500">
     <header className="flex justify-between items-start mb-8">
       <div>
         <div className="text-[10px] tracking-[0.2em] text-cyan-500/60 uppercase">Command Center</div>
         <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter">
-          Welcome, <span className="text-cyan-400">Prakhar</span>
+          Welcome, <span className="text-cyan-400">{currentUser?.["User name"] || 'Citizen'}</span>
         </h2>
         <div className="text-[10px] mt-1 opacity-70">SECTOR: Tech Quarter | CLEARANCE: Citizen</div>
       </div>
       <div className="text-right">
         <div className="text-[10px] tracking-widest opacity-60 uppercase">Reputation Score</div>
-        <div className="text-4xl font-bold text-white">{reputation}</div>
+        <div className="text-4xl font-bold text-white">{currentUser?.Ranking || reputation}</div>
         <div className="text-[10px] text-cyan-400 uppercase">City Credits</div>
         <div className="text-2xl font-bold text-cyan-400">{credits}</div>
       </div>
     </header>
 
     <div className="grid grid-cols-4 gap-4 mb-6">
-      <StatCard icon={<Briefcase size={16}/>} label="ACTIVE JOBS" val={activeJobs.toString()} sub="OPEN LISTINGS >" onClick={() => navigate('/employment')} />
-      <StatCard icon={<RefreshCw size={16}/>} label="ACTIVE TRADES" val={activeTrades.toString()} sub="EXCHANGE MARKET >" onClick={() => navigate('/exchange')} />
+      <StatCard icon={<Briefcase size={16}/>} label="ACTIVE JOBS" val={activeJobs.toString()} sub="OPEN LISTINGS >" onClick={() => navigate('/app/employment')} />
+      <StatCard icon={<RefreshCw size={16}/>} label="ACTIVE TRADES" val={activeTrades.toString()} sub="EXCHANGE MARKET >" onClick={() => navigate('/app/exchange')} />
       <StatCard icon={<AlertTriangle size={16} className="text-red-500"/>} label="CRITICAL ALERTS" val={criticalAlerts.toString()} sub="CITY EMERGENCIES" />
       <StatCard icon={<Bell size={16}/>} label="NOTIFICATIONS" val={criticalAlerts.toString()} sub="UNREAD ALERTS" />
     </div>
@@ -140,19 +142,19 @@ const CommandView = ({ recentJobs, recentTrades, activityFeed, navigate, activeJ
     </div>
 
     <div className="grid grid-cols-2 gap-6 mb-6">
-      <SectionBox title="RECENT JOBS" onViewAll={() => navigate('/employment')}>
+      <SectionBox title="RECENT JOBS" onViewAll={() => navigate('/app/employment')}>
         {recentJobs.map((job) => (
           <JobRow key={job.id} title={job.title} sector={job.sector} level={job.level} />
         ))}
       </SectionBox>
-      <SectionBox title="RECENT TRADES" onViewAll={() => navigate('/exchange')}>
+      <SectionBox title="RECENT TRADES" onViewAll={() => navigate('/app/exchange')}>
         {recentTrades.map((trade) => (
           <TradeRow key={trade.id} title={trade.title} type={trade.type} status={trade.status} />
         ))}
       </SectionBox>
     </div>
 
-    <SectionBox title="CITY ACTIVITY FEED" onViewAll={() => navigate('/thepulse')}>
+    <SectionBox title="CITY ACTIVITY FEED" onViewAll={() => navigate('/app/thepulse')}>
       <div className="space-y-3 font-mono">
         {activityFeed.map((activity, index) => (
           <FeedRow key={index} user={activity.user} action={activity.action} time={activity.time} />
@@ -216,10 +218,10 @@ const IdentityView = () => (
     <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter">Identity Record</h2>
     <div className="bg-[#030c0f] border border-cyan-500/30 p-8 flex items-center gap-8 relative overflow-hidden">
       <div className="absolute top-0 right-0 p-2 text-[10px] text-cyan-500/10">DNA-ID: 772-XQ-9</div>
-      <div className="w-24 h-24 rounded-full border-2 border-cyan-400 flex items-center justify-center text-4xl font-bold text-cyan-400 shadow-[0_0_15px_rgba(0,229,255,0.2)]">P</div>
+      <div className="w-24 h-24 rounded-full border-2 border-cyan-400 flex items-center justify-center text-4xl font-bold text-cyan-400 shadow-[0_0_15px_rgba(0,229,255,0.2)]">{currentUser?.["User name"]?.charAt(0).toUpperCase() || 'U'}</div>
       <div>
-        <h3 className="text-3xl font-black text-white uppercase">Prakhar</h3>
-        <div className="text-cyan-500 font-mono text-sm">@pb_codes</div>
+        <h3 className="text-3xl font-black text-white uppercase">{currentUser?.["User name"] || 'User'}</h3>
+        <div className="text-cyan-500 font-mono text-sm">@{currentUser?.["User name"]?.toLowerCase().replace(/\s+/g, '_') || 'citizen'}</div>
         <div className="flex gap-4 mt-4 text-[10px] uppercase font-bold">
           <span className="bg-cyan-500 text-black px-2">CITIZEN</span>
           <span className="flex items-center gap-1 opacity-60"><MapPin size={10}/> Tech Quarter</span>

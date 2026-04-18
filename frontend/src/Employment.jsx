@@ -8,7 +8,7 @@ import {
 
 const EmploymentGrid = () => {
   const navigate = useNavigate();
-  const { recentJobs, completedJobs, setCredits, setCompletedJobs, setRecentJobs } = useOutletContext();
+  const { recentJobs, completedJobs, setCredits, setCompletedJobs, setRecentJobs, currentUser } = useOutletContext();
   
   // --- STATE MANAGEMENT ---
   const [searchTerm, setSearchTerm] = useState("");
@@ -105,16 +105,16 @@ const EmploymentGrid = () => {
         </div>
 
         <nav className="flex-1 space-y-1">
-          <NavItem icon={<LayoutDashboard size={18} />} label="COMMAND" sub="Dashboard" onClick={() => navigate('/')} />
-          <NavItem icon={<Briefcase size={18} />} label="EMPLOYMENT" sub="Grid" active onClick={() => navigate('/employment')} />
-          <NavItem icon={<RefreshCw size={18} />} label="EXCHANGE" sub="Market" onClick={() => navigate('/exchange')} />
-          <NavItem icon={<Activity size={18} />} label="THE PULSE" sub="City Feed" onClick={() => navigate('/thepulse')} />
-          <NavItem icon={<Trophy size={18} />} label="RANKINGS" sub="Leaderboard" onClick={() => navigate('/ranking')} />
-          <NavItem icon={<User size={18} />} label="IDENTITY" sub="Profile" onClick={() => navigate('/identity')} />
+          <NavItem icon={<LayoutDashboard size={18} />} label="COMMAND" sub="Dashboard" onClick={() => navigate('/app')} />
+          <NavItem icon={<Briefcase size={18} />} label="EMPLOYMENT" sub="Grid" active onClick={() => navigate('/app/employment')} />
+          <NavItem icon={<RefreshCw size={18} />} label="EXCHANGE" sub="Market" onClick={() => navigate('/app/exchange')} />
+          <NavItem icon={<Activity size={18} />} label="THE PULSE" sub="City Feed" onClick={() => navigate('/app/thepulse')} />
+          <NavItem icon={<Trophy size={18} />} label="RANKINGS" sub="Leaderboard" onClick={() => navigate('/app/ranking')} />
+          <NavItem icon={<User size={18} />} label="IDENTITY" sub="Profile" onClick={() => navigate('/app/identity')} />
         </nav>
 
         <div className="mt-auto space-y-4">
-          <button className="flex items-center gap-2 text-[10px] opacity-50 hover:opacity-100 transition-all p-2">
+          <button onClick={() => { localStorage.removeItem('auth'); navigate('/login', { replace: true }); }} className="flex items-center gap-2 text-[10px] opacity-50 hover:opacity-100 transition-all p-2">
             <LogOut size={14} /> DISCONNECT
           </button>
           <div className="text-[9px] opacity-30 px-2 uppercase tracking-widest">Sector: Tech Quarter</div>

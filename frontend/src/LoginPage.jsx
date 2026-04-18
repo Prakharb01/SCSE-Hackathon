@@ -1,7 +1,84 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+
+const getAuth = () => typeof window !== 'undefined' && localStorage.getItem('auth');
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [pass, setPass] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (getAuth()) {
+      navigate('/app', { replace: true });
+    }
+  }, []);
+
+  const handleLogin = async (event) => {
+    if (event) event.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const query = new URLSearchParams({ name, pass }).toString();
+      const response = await fetch(`http://localhost:3000/login?${query}`);
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setError("Incorrect name or password.");
+        } else {
+          setError("Login failed. Please try again.");
+        }
+        setLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+      localStorage.setItem('auth', JSON.stringify(data.user));
+      navigate('/app', { replace: true });
+    } catch (fetchError) {
+      setError("Unable to reach the server. Please try again later.");
+      setLoading(false);
+    }
+  };
+
+  const handleSignup = async () => {
+    if (!name || !pass) {
+      setError("Please enter both name and password to sign up.");
+      return;
+    }
+    
+    setError("");
+    setLoading(true);
+
+    try {
+      const query = new URLSearchParams({ name, pass }).toString();
+      const response = await fetch(`http://localhost:3000/signup?${query}`, {
+        method: 'POST'
+      });
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          setError("User already exists. Please try logging in.");
+        } else {
+          setError("Signup failed. Please try again.");
+        }
+        setLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+      setError("Signup successful! You can now log in.");
+      setLoading(false);
+    } catch (fetchError) {
+      setError("Unable to reach the server. Please try again later.");
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex bg-black text-white font-mono overflow-hidden">
       
@@ -87,11 +164,13 @@ export default function LoginPage() {
           </h2>
         </div>
 
-        <div className="space-y-6">
+        <form className="space-y-6" onSubmit={handleLogin}>
           <div className="group relative">
             <input
               type="text"
               placeholder="CITIZEN_ID"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="w-full p-4 bg-white/5 border border-white/10 focus:border-pink-500 focus:outline-none transition-all placeholder:text-gray-600 text-cyan-400"
             />
             <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-pink-500 group-focus-within:w-full transition-all duration-500"></div>
@@ -101,19 +180,25 @@ export default function LoginPage() {
             <input
               type="password"
               placeholder="ACCESS_CODE"
+              value={pass}
+              onChange={(e) => setPass(e.target.value)}
               className="w-full p-4 bg-white/5 border border-white/10 focus:border-cyan-400 focus:outline-none transition-all placeholder:text-gray-600 text-pink-400"
             />
             <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-cyan-400 group-focus-within:w-full transition-all duration-500"></div>
           </div>
 
+          {error && <p className="text-sm text-red-400">{error}</p>}
+
           <motion.button 
+            type="submit"
             whileHover={{ scale: 1.02, boxShadow: "0 0 20px rgba(236,72,153,0.4)" }}
             whileTap={{ scale: 0.98 }}
-            className="w-full bg-pink-500 text-black font-black py-4 tracking-widest hover:bg-pink-400 transition-colors"
+            disabled={loading}
+            className="w-full bg-pink-500 text-black font-black py-4 tracking-widest hover:bg-pink-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            INITIALIZE SESSION
+            {loading ? "CONNECTING..." : "INITIALIZE SESSION"}
           </motion.button>
-        </div>
+        </form>
 
         <div className="mt-8 flex justify-between items-center text-[10px]">
           <span className="text-gray-500 hover:text-cyan-400 cursor-pointer transition-colors underline decoration-cyan-500/20">RECOVER KEY</span>
@@ -130,7 +215,7 @@ export default function LoginPage() {
         </button>
 
         <p className="text-[10px] text-center text-gray-500 mt-10">
-          Unregistered citizen? <span className="text-pink-500 font-bold cursor-pointer hover:underline">APPLY FOR CITIZENSHIP</span>
+          Unregistered citizen? <span className="text-pink-500 font-bold cursor-pointer hover:underline" onClick={handleSignup}>APPLY FOR CITIZENSHIP</span>
         </p>
       </motion.div>
     </div>

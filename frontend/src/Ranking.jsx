@@ -53,42 +53,44 @@ const NeoCityHub = () => {
             icon={<LayoutGrid size={18}/>} 
             label="COMMAND" 
             active={activePage === 'COMMAND'} 
-            onClick={() => navigate('/')} 
+            onClick={() => navigate('/app')} 
           />
           <SidebarLink 
             icon={<Briefcase size={18}/>} 
             label="EMPLOYMENT" 
             active={activePage === 'EMPLOYMENT'} 
-            onClick={() => navigate('/employment')} 
+            onClick={() => navigate('/app/employment')} 
           />
           <SidebarLink 
             icon={<RefreshCw size={18}/>} 
             label="EXCHANGE" 
             active={activePage === 'EXCHANGE'} 
-            onClick={() => navigate('/exchange')} 
+            onClick={() => navigate('/app/exchange')} 
           />
           <SidebarLink 
             icon={<Activity size={18}/>} 
             label="THE PULSE" 
             active={activePage === 'PULSE'} 
-            onClick={() => navigate('/thepulse')} 
+            onClick={() => navigate('/app/thepulse')} 
           />
           <SidebarLink 
             icon={<Trophy size={18}/>} 
             label="RANKINGS" 
             active={activePage === 'RANKINGS'} 
-            onClick={() => navigate('/ranking')} 
+            onClick={() => navigate('/app/ranking')} 
           />
           <SidebarLink 
             icon={<User size={18}/>} 
             label="IDENTITY" 
             active={activePage === 'IDENTITY'} 
-            onClick={() => navigate('/identity')} 
+            onClick={() => navigate('/app/identity')} 
           />
         </nav>
 
         <div className="pt-4 border-t border-[#30363d] text-[10px] text-slate-600">
-           <p className="uppercase tracking-widest flex items-center gap-2"><LogOut size={12}/> Disconnect</p>
+          <button onClick={() => { localStorage.removeItem('auth'); navigate('/login', { replace: true }); }} className="uppercase tracking-widest flex items-center gap-2 text-left p-2 text-[10px] opacity-50 hover:opacity-100 transition-all">
+            <LogOut size={12}/> Disconnect
+          </button>
         </div>
       </aside>
 
@@ -151,12 +153,12 @@ const ExchangePage = () => {
 
 // --- RANKINGS PAGE COMPONENT ---
 const RankingsPage = () => {
-  const { credits = 100, reputation = 100 } = useOutletContext();
+  const { credits = 100, reputation = 100, currentUser } = useOutletContext();
   const users = [
     { name: "Director Steele", sector: "Power Grid", credit: 1580, rep: 220, isUser: false },
     { name: "Kaito Ryu", sector: "Tech Quarter", credit: 1320, rep: 190, isUser: false },
     { name: "Sable Nova", sector: "Industrial", credit: 1040, rep: 160, isUser: false },
-    { name: "prakhar", sector: "Tech Quarter", credit: credits, rep: reputation, isUser: true }
+    { name: currentUser?.["User name"] || "You", sector: "Tech Quarter", credit: credits, rep: reputation, isUser: true }
   ];
 
   const sortedUsers = [...users].sort((a, b) => b.credit - a.credit || b.rep - a.rep);

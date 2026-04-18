@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { 
   LayoutDashboard, Briefcase, RefreshCw, Activity, 
   Trophy, User, LogOut, Radio, Search, 
@@ -8,6 +8,7 @@ import {
 
 const ThePulse = () => {
   const navigate = useNavigate();
+  const { currentUser, reputation = 100 } = useOutletContext();
   // --- STATE FOR CITY FEED ---
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -54,7 +55,7 @@ const ThePulse = () => {
     const newPulse = {
       ...formData,
       id: Date.now(),
-      author: "prakhar",
+      author: currentUser?.["User name"] || "Citizen",
       date: "4/18/2026",
       views: 0,
       likes: 0
@@ -89,25 +90,29 @@ const ThePulse = () => {
         </div>
 
         <div className="flex items-center gap-3 p-3 bg-cyan-950/20 rounded border border-cyan-900/30 mb-6">
-          <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-black font-bold">P</div>
+          <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-black font-bold">
+            {currentUser?.["User name"]?.charAt(0).toUpperCase() || 'U'}
+          </div>
           <div className="flex-1">
-            <div className="text-xs font-bold text-white leading-tight">prakhar</div>
-            <div className="text-[9px] text-cyan-400 opacity-70 italic tracking-tighter">100 REP</div>
+            <div className="text-xs font-bold text-white leading-tight">{currentUser?.["User name"] || 'User'}</div>
+            <div className="text-[9px] text-cyan-400 opacity-70 italic tracking-tighter">
+              {currentUser?.Ranking || reputation} REP
+            </div>
           </div>
           <span className="text-[8px] border border-cyan-500/50 px-1 text-cyan-400 bg-cyan-500/10 uppercase">Citizen</span>
         </div>
 
         <nav className="flex-1 space-y-1">
-          <NavItem icon={<LayoutDashboard size={18} />} label="COMMAND" sub="Dashboard" onClick={() => navigate('/')} />
-          <NavItem icon={<Briefcase size={18} />} label="EMPLOYMENT" sub="Grid" onClick={() => navigate('/employment')} />
-          <NavItem icon={<RefreshCw size={18} />} label="EXCHANGE" sub="Market" onClick={() => navigate('/exchange')} />
-          <NavItem icon={<Activity size={18} />} label="THE PULSE" sub="City Feed" active onClick={() => navigate('/thepulse')} />
-          <NavItem icon={<Trophy size={18} />} label="RANKINGS" sub="Leaderboard" onClick={() => navigate('/ranking')} />
-          <NavItem icon={<User size={18} />} label="IDENTITY" sub="Profile" onClick={() => navigate('/identity')} />
+          <NavItem icon={<LayoutDashboard size={18} />} label="COMMAND" sub="Dashboard" onClick={() => navigate('/app')} />
+          <NavItem icon={<Briefcase size={18} />} label="EMPLOYMENT" sub="Grid" onClick={() => navigate('/app/employment')} />
+          <NavItem icon={<RefreshCw size={18} />} label="EXCHANGE" sub="Market" onClick={() => navigate('/app/exchange')} />
+          <NavItem icon={<Activity size={18} />} label="THE PULSE" sub="City Feed" active onClick={() => navigate('/app/thepulse')} />
+          <NavItem icon={<Trophy size={18} />} label="RANKINGS" sub="Leaderboard" onClick={() => navigate('/app/ranking')} />
+          <NavItem icon={<User size={18} />} label="IDENTITY" sub="Profile" onClick={() => navigate('/app/identity')} />
         </nav>
 
         <div className="mt-auto pt-4 border-t border-cyan-900/20">
-          <button className="flex items-center gap-2 text-[10px] opacity-50 hover:opacity-100 transition-all p-2 uppercase tracking-widest">
+          <button onClick={() => { localStorage.removeItem('auth'); navigate('/login', { replace: true }); }} className="flex items-center gap-2 text-[10px] opacity-50 hover:opacity-100 transition-all p-2 uppercase tracking-widest">
             <LogOut size={14} /> Disconnect
           </button>
           <div className="text-[9px] opacity-30 px-2 mt-2 uppercase tracking-widest">Sector: Tech Quarter</div>

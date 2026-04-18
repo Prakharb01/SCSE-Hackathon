@@ -1,0 +1,52 @@
+[
+  {
+    "User name": "AaravSharma92",
+    "Password": "aS9#kL2!pQ",
+    "Jobs completed": 47,
+    "Trades completed": 132,
+    "Verification": "Verified",
+    "Profile photo": "https://example.com/profiles/aarav.jpg",
+    "Sector": "Information Technology",
+    "Ranking": 4.7
+  },
+  {
+    "User name": "NehaVermaX",
+    "Password": "nV3@tR8$zQ",
+    "Jobs completed": 23,
+    "Trades completed": 58,
+    "Verification": "Unverified",
+    "Profile photo": "https://example.com/profiles/neha.jpg",
+    "Sector": "Finance",
+    "Ranking": 3.9
+  },
+  {
+    "User name": "RohitKumar007",
+    "Password": "rK7!mN5@xY",
+    "Jobs completed": 89,
+    "Trades completed": 210,
+    "Verification": "Verified",
+    "Profile photo": "https://example.com/profiles/rohit.jpg",
+    "Sector": "Construction",
+    "Ranking": 4.9
+  },
+  {
+    "User name": "SanaAliDev",
+    "Password": "sA4#vB9!cD",
+    "Jobs completed": 61,
+    "Trades completed": 145,
+    "Verification": "Verified",
+    "Profile photo": "https://example.com/profiles/sana.jpg",
+    "Sector": "Software Development",
+    "Ranking": 4.5
+  },
+  {
+    "User name": "VikramSinghPro",
+    "Password": "vS2@pL6!qR",
+    "Jobs completed": 12,
+    "Trades completed": 34,
+    "Verification": "Pending",
+    "Profile photo": "https://example.com/profiles/vikram.jpg",
+    "Sector": "Marketing",
+    "Ranking": 3.2
+  }
+]

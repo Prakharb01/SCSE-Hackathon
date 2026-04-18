@@ -35,6 +35,7 @@ export default function NeoJamshedpur() {
     reputation = 100,
     completedJobs = 0,
     completedTrades = 0,
+    currentUser
   } = useOutletContext();
   const [profilePicture, setProfilePicture] = useState(null);
   const fileInputRef = useRef(null);
@@ -125,12 +126,12 @@ export default function NeoJamshedpur() {
 
         <div className="flex items-center gap-3 p-3 bg-cyan-950/20 border border-cyan-900/30 mb-6">
           <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-black font-bold">
-            P
+            {currentUser?.["User name"]?.charAt(0).toUpperCase() || 'U'}
           </div>
           <div className="flex-1 overflow-hidden">
-            <div className="text-xs font-bold text-white truncate">prakhar</div>
+            <div className="text-xs font-bold text-white truncate">{currentUser?.["User name"] || 'User'}</div>
             <div className="text-[9px] text-cyan-400 opacity-70 italic">
-              100 REP
+              {currentUser?.Ranking || reputation} REP
             </div>
           </div>
           <span className="text-[8px] border border-cyan-500/50 px-1 text-cyan-400">
@@ -144,46 +145,46 @@ export default function NeoJamshedpur() {
             label="COMMAND"
             sub="Dashboard"
             active={activeTab === "COMMAND"}
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/app")}
           />
           <NavItem
             icon={<Briefcase size={18} />}
             label="EMPLOYMENT"
             sub="Grid"
             active={activeTab === "EMPLOYMENT"}
-            onClick={() => navigate("/employment")}
+            onClick={() => navigate("/app/employment")}
           />
           <NavItem
             icon={<RefreshCw size={18} />}
             label="EXCHANGE"
             sub="Market"
             active={activeTab === "EXCHANGE"}
-            onClick={() => navigate("/exchange")}
+            onClick={() => navigate("/app/exchange")}
           />
           <NavItem
             icon={<Activity size={18} />}
             label="THE PULSE"
             sub="City Feed"
             active={activeTab === "THE PULSE"}
-            onClick={() => navigate("/thepulse")}
+            onClick={() => navigate("/app/thepulse")}
           />
           <NavItem
             icon={<Trophy size={18} />}
             label="RANKINGS"
             sub="Leaderboard"
             active={activeTab === "RANKINGS"}
-            onClick={() => navigate("/ranking")}
+            onClick={() => navigate("/app/ranking")}
           />
           <NavItem
             icon={<User size={18} />}
             label="IDENTITY"
             sub="Profile"
             active={activeTab === "IDENTITY"}
-            onClick={() => navigate("/identity")}
+            onClick={() => navigate("/app/identity")}
           />
         </nav>
 
-        <button className="flex items-center gap-2 text-[10px] opacity-40 hover:opacity-100 p-2 uppercase mt-auto">
+        <button onClick={() => { localStorage.removeItem('auth'); navigate('/login', { replace: true }); }} className="flex items-center gap-2 text-[10px] opacity-50 hover:opacity-100 transition-all p-2 uppercase mt-auto">
           <LogOut size={14} /> Disconnect
         </button>
       </aside>
@@ -203,7 +204,7 @@ export default function NeoJamshedpur() {
 
         <div className="flex-1 overflow-y-auto p-10">
           {activeTab === "COMMAND" && (
-            <DashboardView jobs={jobs} pulses={pulses} />
+            <DashboardView jobs={jobs} pulses={pulses} currentUser={currentUser} />
           )}
           {activeTab === "EMPLOYMENT" && (
             <EmploymentView
@@ -227,6 +228,7 @@ export default function NeoJamshedpur() {
               jobsDone={completedJobs}
               tradesDone={completedTrades}
               totalListings={completedJobs + completedTrades}
+              currentUser={currentUser}
             />
           )}
         </div>
@@ -246,7 +248,7 @@ export default function NeoJamshedpur() {
 
 // --- SUB-VIEWS ---
 
-function DashboardView({ jobs, pulses }) {
+function DashboardView({ jobs, pulses, currentUser }) {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <header>
@@ -254,7 +256,7 @@ function DashboardView({ jobs, pulses }) {
           Command Center
         </div>
         <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter">
-          Welcome, <span className="text-cyan-400">Prakhar</span>
+          Welcome, <span className="text-cyan-400">{currentUser?.["User name"] || 'Citizen'}</span>
         </h2>
       </header>
 
@@ -434,8 +436,8 @@ function IdentityView({
           />
         </div>
         <div>
-          <h3 className="text-3xl font-black text-white uppercase">Prakhar</h3>
-          <div className="text-cyan-500 font-mono text-sm">@pb_codes</div>
+          <h3 className="text-3xl font-black text-white uppercase">{currentUser?.["User name"] || 'User'}</h3>
+          <div className="text-cyan-500 font-mono text-sm">@{currentUser?.["User name"]?.toLowerCase().replace(/\s+/g, '_') || 'citizen'}</div>
           <div className="flex gap-4 mt-4 text-[10px] uppercase font-bold">
             <span className="bg-cyan-500 text-black px-2">CITIZEN</span>
             <span className="flex items-center gap-1 opacity-60">
@@ -568,7 +570,7 @@ function EntryModal({ type, onClose, onSave }) {
                 ...data,
                 id: Date.now(),
                 type: "NORMAL",
-                author: "prakhar",
+                author: currentUser?.["User name"] || "Citizen",
                 date: "4/18/2026",
                 views: 0,
                 likes: 0,
