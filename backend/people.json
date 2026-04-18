@@ -48,5 +48,15 @@
     "Profile photo": "https://example.com/profiles/vikram.jpg",
     "Sector": "Marketing",
     "Ranking": 3.2
+  },
+  {
+    "User name": "a",
+    "Password": "b",
+    "Jobs completed": 0,
+    "Trades completed": 0,
+    "Verification": "Pending",
+    "Profile photo": "https://example.com/profiles/default.jpg",
+    "Sector": "General",
+    "Ranking": 0
   }
 ]

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import { useUserContext } from "./Layout.jsx";
 import {
   LayoutDashboard,
   Briefcase,
@@ -35,12 +36,15 @@ export default function NeoJamshedpur() {
     reputation = 100,
     completedJobs = 0,
     completedTrades = 0,
-    currentUser
-  } = useOutletContext();
+    currentUser,
+  } = useUserContext() || {};
   const [profilePicture, setProfilePicture] = useState(null);
   const fileInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState("IDENTITY");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Ensure currentUser is always an object
+  const safeCurrentUser = currentUser || { "User name": "Guest", Ranking: 0, "Jobs completed": 0, "Trades completed": 0, Verification: "Pending" };
 
   const triggerProfileUpload = () => fileInputRef.current?.click();
   const handleProfileChange = (event) => {
@@ -126,10 +130,12 @@ export default function NeoJamshedpur() {
 
         <div className="flex items-center gap-3 p-3 bg-cyan-950/20 border border-cyan-900/30 mb-6">
           <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-black font-bold">
-            {currentUser?.["User name"]?.charAt(0).toUpperCase() || 'U'}
+            {currentUser?.["User name"]?.charAt(0).toUpperCase() || "U"}
           </div>
           <div className="flex-1 overflow-hidden">
-            <div className="text-xs font-bold text-white truncate">{currentUser?.["User name"] || 'User'}</div>
+            <div className="text-xs font-bold text-white truncate">
+              {currentUser?.["User name"] || "User"}
+            </div>
             <div className="text-[9px] text-cyan-400 opacity-70 italic">
               {currentUser?.Ranking || reputation} REP
             </div>
@@ -184,7 +190,13 @@ export default function NeoJamshedpur() {
           />
         </nav>
 
-        <button onClick={() => { localStorage.removeItem('auth'); navigate('/login', { replace: true }); }} className="flex items-center gap-2 text-[10px] opacity-50 hover:opacity-100 transition-all p-2 uppercase mt-auto">
+        <button
+          onClick={() => {
+            localStorage.removeItem("auth");
+            navigate("/login", { replace: true });
+          }}
+          className="flex items-center gap-2 text-[10px] opacity-50 hover:opacity-100 transition-all p-2 uppercase mt-auto"
+        >
           <LogOut size={14} /> Disconnect
         </button>
       </aside>
@@ -204,7 +216,11 @@ export default function NeoJamshedpur() {
 
         <div className="flex-1 overflow-y-auto p-10">
           {activeTab === "COMMAND" && (
-            <DashboardView jobs={jobs} pulses={pulses} currentUser={currentUser} />
+            <DashboardView
+              jobs={jobs}
+              pulses={pulses}
+              currentUser={currentUser}
+            />
           )}
           {activeTab === "EMPLOYMENT" && (
             <EmploymentView
@@ -228,7 +244,7 @@ export default function NeoJamshedpur() {
               jobsDone={completedJobs}
               tradesDone={completedTrades}
               totalListings={completedJobs + completedTrades}
-              currentUser={currentUser}
+              currentUser={safeCurrentUser}
             />
           )}
         </div>
@@ -256,7 +272,10 @@ function DashboardView({ jobs, pulses, currentUser }) {
           Command Center
         </div>
         <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter">
-          Welcome, <span className="text-cyan-400">{currentUser?.["User name"] || 'Citizen'}</span>
+          Welcome,{" "}
+          <span className="text-cyan-400">
+            {currentUser?.["User name"] || "Citizen"}
+          </span>
         </h2>
       </header>
 
@@ -398,6 +417,7 @@ function IdentityView({
   jobsDone,
   tradesDone,
   totalListings,
+  currentUser,
 }) {
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
@@ -436,8 +456,14 @@ function IdentityView({
           />
         </div>
         <div>
-          <h3 className="text-3xl font-black text-white uppercase">{currentUser?.["User name"] || 'User'}</h3>
-          <div className="text-cyan-500 font-mono text-sm">@{currentUser?.["User name"]?.toLowerCase().replace(/\s+/g, '_') || 'citizen'}</div>
+          <h3 className="text-3xl font-black text-white uppercase">
+            {currentUser?.["User name"] || "User"}
+          </h3>
+          <div className="text-cyan-500 font-mono text-sm">
+            @
+            {currentUser?.["User name"]?.toLowerCase().replace(/\s+/g, "_") ||
+              "citizen"}
+          </div>
           <div className="flex gap-4 mt-4 text-[10px] uppercase font-bold">
             <span className="bg-cyan-500 text-black px-2">CITIZEN</span>
             <span className="flex items-center gap-1 opacity-60">

@@ -47,7 +47,7 @@ const router = createBrowserRouter(
     <>
       <Route path='/' element={<Navigate to="/login" replace />} />
       <Route path='/login' element={<RedirectIfAuth />} />
-      <Route path='/app' element={<RequireAuth><Layout /></RequireAuth>}>
+      <Route path='/app' element={<Layout />}>
         <Route index element={<LandingPage />} />
         <Route path='employment' element={<EmploymentGrid />} />
         <Route path='exchange' element={<Exchange />} />
