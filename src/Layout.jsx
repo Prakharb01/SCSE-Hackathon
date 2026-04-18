@@ -25,9 +25,11 @@ function Layout() {
     ? `CRITICAL: ${recentJobs.find(job => job.level === 'CRITICAL')?.title ?? 'Immediate action required.'}`
     : 'No active critical city alerts at this time.';
 
-  // State for user credits and completed jobs
+  // State for user credits, reputation, and completed success metrics
   const [credits, setCredits] = useState(100);
+  const [reputation, setReputation] = useState(100);
   const [completedJobs, setCompletedJobs] = useState(0);
+  const [completedTrades, setCompletedTrades] = useState(0);
 
   // Job templates for random generation
   const jobTemplates = [
@@ -134,7 +136,25 @@ function Layout() {
   }, []);
 
   return (
-    <Outlet context={{ recentJobs, recentTrades, activityFeed, activeJobs, activeTrades, criticalAlerts, criticalAlertMessage, credits, completedJobs, setCredits, setCompletedJobs, setRecentJobs }} />
+    <Outlet context={{
+      recentJobs,
+      recentTrades,
+      activityFeed,
+      activeJobs,
+      activeTrades,
+      criticalAlerts,
+      criticalAlertMessage,
+      credits,
+      reputation,
+      completedJobs,
+      completedTrades,
+      setCredits,
+      setReputation,
+      setCompletedJobs,
+      setCompletedTrades,
+      setRecentJobs,
+      setRecentTrades
+    }} />
   )
 }
 

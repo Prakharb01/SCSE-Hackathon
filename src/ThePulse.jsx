@@ -10,6 +10,7 @@ const ThePulse = () => {
   const navigate = useNavigate();
   // --- STATE FOR CITY FEED ---
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const [feedItems, setFeedItems] = useState([
     {
       id: 1,
@@ -62,6 +63,13 @@ const ThePulse = () => {
     setIsModalOpen(false);
     setFormData({ title: '', content: '', sector: 'Tech Quarter', type: 'SOCIAL' });
   };
+
+  const filteredFeedItems = feedItems.filter(item => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+    if (!normalizedSearch) return true;
+    return [item.title, item.content, item.sector, item.type]
+      .some(field => field.toLowerCase().includes(normalizedSearch));
+  });
 
   const alertCount = feedItems.filter(item => item.type === 'ALERT').length;
   const latestAlert = feedItems.find(item => item.type === 'ALERT');
@@ -160,6 +168,8 @@ const ThePulse = () => {
                 <input 
                   type="text" 
                   placeholder="Search pulse..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full bg-[#041217] border border-cyan-900/50 py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-cyan-400/50 placeholder:text-cyan-900 uppercase tracking-tighter"
                 />
               </div>
@@ -169,9 +179,14 @@ const ThePulse = () => {
 
             {/* Feed List */}
             <div className="space-y-6">
-              {feedItems.map(item => (
+              {filteredFeedItems.map(item => (
                 <PulseCard key={item.id} {...item} />
               ))}
+              {filteredFeedItems.length === 0 && (
+                <div className="rounded-xl border border-cyan-900/30 bg-[#041217]/60 p-8 text-center text-cyan-400">
+                  No pulse items match your search.
+                </div>
+              )}
             </div>
           </div>
         </div>
